@@ -6,6 +6,7 @@ from entities import *
 import events
 import pygame
 import time
+import random
 
 
 def main():
@@ -20,10 +21,24 @@ def main():
             location = Vector2D(100,100),
             rotation = 0,
             max_health = 100,
-            speed = 1
+            speed = 2
         )
     )
     world.player.move(Vector2D(1,0)) # silly
+    
+    for i in range(10):
+        world.spawn_enemy(
+            EnemyShip(
+                Vector2D(
+                    random.randrange(0, 1280),
+                    random.randrange(0, 720)
+                ),
+                0,
+                100, 
+                1,
+                world
+            )
+        )
 
     while running:       
         world.update()

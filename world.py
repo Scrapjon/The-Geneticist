@@ -7,7 +7,7 @@ class World:
 
     screen: pygame.Surface
     player: PlayerShip
-    enemies: list[EnemyShip]
+    enemies: list[EnemyShip] = []
     event_manager: EventManager = EventManager()
 
     def __init__(self, screen: pygame.Surface, player: PlayerShip) -> None:
@@ -23,11 +23,11 @@ class World:
         
         self.event_manager.add_input_event(
             InputKeys.W, 
-            lambda: self.player.move(Vector2D(0,1))
+            lambda: self.player.move(Vector2D(0,-1))
         )
         self.event_manager.add_input_event(
             InputKeys.S,
-            lambda: self.player.move(Vector2D(0,-1))
+            lambda: self.player.move(Vector2D(0,1))
         )
         self.event_manager.add_input_event(
             InputKeys.D,
@@ -40,7 +40,7 @@ class World:
 
 
     def spawn_enemy(self, enemy: EnemyShip):
-        pass
+        self.enemies.append(enemy)
 
     def update(self):
 
@@ -48,9 +48,12 @@ class World:
 
 
         # fill the screen with a color to wipe away anything from last frame
-        self.player.update()
         self.screen.fill("black")
+        self.player.update()
         self.player.draw(self.screen)
+        for enemy in self.enemies:
+            enemy.update()
+            enemy.draw(self.screen)
 
         # flip() the display to put your work on screen
         pygame.display.flip()
