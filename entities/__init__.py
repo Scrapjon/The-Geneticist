@@ -1,5 +1,7 @@
+from .entity import Entity
 from .ship import Ship
 from .enemy import EnemyShip
 from .player import PlayerShip
+from .projectile import Projectile
 
-all = ["Ship", "EnemyShip", "PlayerShip"]
+all = ["Entity", "Ship", "EnemyShip", "PlayerShip", "Projectile"]

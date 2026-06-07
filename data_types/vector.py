@@ -1,5 +1,9 @@
-from math import sin, cos, radians, sqrt
+from math import sin, cos, atan2, radians, sqrt, pi
 from dataclasses import dataclass
+
+# Constants
+MAGIC_RADIAN_NUMBER = pi/180 # converts degrees to radians when multiplied
+MAGIC_DEGREE_NUMBER = 1/(pi/180) # converts radians to degrees when multiplied 
 
 @dataclass
 class Vector2D:
@@ -9,6 +13,7 @@ class Vector2D:
     @property
     def tuple(self):
         return self.x, self.y
+
     
     def __add__(self, rhs):
         if type(rhs) == Vector2D:
@@ -43,6 +48,9 @@ class Vector2D:
             y = (self.y * c) + (self.x * s)
         )
     
+    def get_angle(self):
+        return atan2(self.y, self.x) / (2 * pi)
+    
     def dot(self, rhs):
         return dot(self, rhs)
     
@@ -53,7 +61,11 @@ class Vector2D:
         return length_sq(self)
     
     def normalise(self):
-        return self / self.length()
+        _length = self.length()
+        if _length == 0:
+            return Vector2D(0,0)
+        return self / _length
+    
 def dot(lhs: Vector2D, rhs: Vector2D) -> float:
     return (lhs.x * rhs.x) + (lhs.y * rhs.y)
 

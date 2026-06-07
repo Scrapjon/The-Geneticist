@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import NamedTuple
+from .vector import Vector2D
 
 @dataclass
 class BoidData:

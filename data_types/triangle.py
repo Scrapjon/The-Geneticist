@@ -48,19 +48,18 @@ class Triangle:
         return abs((x2-x1)*(y3-y1) - (x3-x1)*(y2-y1))
     
     def is_inside(self, point: Vector2D) -> bool:
-        area_orig = self.area
 
-        x1, y1 = self.p1.x, self.p1.y
-        x2, y2 = self.p2.x, self.p2.y
-        x3, y3 = self.p3.x, self.p3.y
+        tri_points = [self.p1, self.p2, self.p3]
 
-        px, py = point.x, point.y
+        radius = 0
+        for tri_point in tri_points:
+            for axis in tri_point.tuple:
+                radius = max(radius, axis)
+        
+        dist = (point - self.center).length_sq()
 
-        area1 = abs((x1 - px)*(y2 - py) - (x2 - px)*(y1 - py))
-        area2 = abs((x2 - px)*(y3 - py) - (x3 - px)*(y2 - py))
-        area3 = abs((x3 - px)*(y1 - py) - (x1 - px)*(y3 - py))
+        return dist < radius * radius
 
-        return (area1 + area2 + area3) == area_orig
         
     
     def __str__(self):

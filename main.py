@@ -1,4 +1,3 @@
-import geneticist
 from world import World
 from data_types.vector import Vector2D
 from data_types.rotator import Rotator
@@ -29,14 +28,13 @@ def main():
     for i in range(10):
         world.spawn_enemy(
             EnemyShip(
-                Vector2D(
+                location = Vector2D(
                     random.randrange(0, 1280),
                     random.randrange(0, 720)
                 ),
-                0,
-                100, 
-                1,
-                world
+                rotation = 0,
+                max_health = 100, 
+                world = world
             )
         )
 
@@ -44,7 +42,6 @@ def main():
         world.update()
 
         running = not world.should_exit()
-        print(world.player.rotation)
         clock.tick(60)  # limits FPS to 60
 
     pygame.quit()
