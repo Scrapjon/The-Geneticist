@@ -12,10 +12,15 @@ class EnemyShip(Ship):
 
     genome: Genome
 
-    def __init__(self, location: Vector2D, rotation: float, max_health: float, world):
+    def __init__(self, location: Vector2D, rotation: float, max_health: float, world, genome: Genome):
         super().__init__(location, rotation, max_health)
         self.color = (255, 0, 0)
         self.world = world
+        self.genome = genome
+
+    @property
+    def boid_data(self):
+        return BoidData(self.genome.separation, self.genome.alignment, self.genome.cohesion)
 
     def draw(self, screen: Surface):
         return super().draw(screen)
@@ -78,9 +83,10 @@ class EnemyShip(Ship):
         
 
     def advance(self):
-        flock_vel = self.flock(self.world.enemies, 50, .0003)
-        align_vel = self.align(self.world.enemies, 50, .01)
-        avoid_vel = self.avoid(self.world.enemies, 20, .001)
+        separation, alignment, cohesion = self.boid_data
+        flock_vel = self.flock(self.world.enemies, 100, cohesion)
+        align_vel = self.align(self.world.enemies, 100, alignment)
+        avoid_vel = self.avoid(self.world.enemies, 40, separation)
         
         final_vel = (self.velocity + Vector2D(
                 x=flock_vel.x + avoid_vel.x + align_vel.x,

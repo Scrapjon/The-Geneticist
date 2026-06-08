@@ -14,15 +14,15 @@ class Entity(pygame.sprite.Sprite):
     def update(self, *args: Any, **kwargs: Any) -> None:
         if "world" in kwargs.keys():
             world = kwargs['world']
-            pad = 50
+            pad = 0
             if (self.location.x > (width := world.screen.get_width())):
                 self.location.x = (self.location.x % width) + pad
             if self.location.x < 0:
-                self.location.x = (width - self.location.x % width) - pad # it's so strange how variables are function scoped in python...
+                self.location.x = width - pad # it's so strange how variables are function scoped in python...
             if self.location.y > (height := world.screen.get_height()):
                 self.location.y = (self.location.y % height) + pad
             if self.location.y < 0:
-                self.location.y = (height - self.location.y % height) 
+                self.location.y = height - pad 
                 
         return super().update(*args, **kwargs)
     

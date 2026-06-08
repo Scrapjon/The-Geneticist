@@ -62,8 +62,5 @@ class Ship(Entity):
         world.spawn_projectile(Projectile(self.location, 10, self.velocity, self))
     
     def handle_collision(self, world):
-        for entity in world.entities:
-            inside: bool = self.triangle.is_inside(entity.location)
-            if inside:
-                print(inside)
+        pass
         

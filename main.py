@@ -1,6 +1,7 @@
 from world import World
 from data_types.vector import Vector2D
 from data_types.rotator import Rotator
+from data_types.genome import Genome
 from entities import *
 import events
 import pygame
@@ -32,9 +33,10 @@ def main():
                     random.randrange(0, 1280),
                     random.randrange(0, 720)
                 ),
-                rotation = 0,
+                rotation = random.randrange(0,360),
                 max_health = 100, 
-                world = world
+                world = world,
+                genome=Genome(0.003,0.1,0.01,100,100,100,100)
             )
         )
 
