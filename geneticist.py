@@ -40,6 +40,10 @@ class Geneticist:
         self.last_fittest_genome: Optional[Genome] = None
         self.last_fittest_score: float = 0.0
 
+        # one record per generation for the evolution chart
+        self.history: list[dict] = []
+        self._chart_saved_on_death: bool = False
+
     @property
     def enemy_count(self):
         return len(self.enemies)
@@ -85,6 +89,7 @@ class Geneticist:
         self.total_damage_to_player = 0.0
         self.wave_records = []
         self.wave_active = True
+        self._record_generation()
 
         for genome in self.population:
             enemy = EnemyShip(
@@ -108,6 +113,9 @@ class Geneticist:
         if not world.player.alive:
             self.wave_active = False
             world.game_over = True
+            if not self._chart_saved_on_death:
+                self._chart_saved_on_death = True
+                self.save_chart()
             return
 
         if self.enemy_count == 0:
@@ -134,6 +142,36 @@ class Geneticist:
 
         self.wave_num += 1
         self.spawn_wave(world)
+
+        # Refresh the evolution chart between waves so whatever is on disk is
+        # always current, even if the run ends with the window close. Quiet so
+        # it doesn't spam the console every wave.
+        self.save_chart(announce=False)
+
+    def _record_generation(self):
+        """Snapshot the mean of every gene across the population about to play.
+        Recorded at spawn so a generation is logged even if the player dies in
+        it and end_wave never runs."""
+        if not self.population:
+            return
+        n = len(self.population)
+        mean = [sum(g[i] for g in self.population) / n for i in range(len(self.population[0]))]
+        self.history.append({"wave": self.wave_num, "mean": mean})
+
+    def save_chart(self, announce: bool = True):
+        """Render the genome-evolution chart to charts/. Wrapped so a charting
+        hiccup can never take the game down with it."""
+        if not self.history:
+            return None
+        try:
+            from charts import save_genome_evolution
+            path = save_genome_evolution(self.history)
+            if path and announce:
+                print(f"genome evolution chart saved to {path}")
+            return path
+        except Exception as exc:
+            print(f"chart save failed: {exc}")
+            return None
 
     # ----- the genetic algorithm -----
 

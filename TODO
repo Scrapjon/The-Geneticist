@@ -12,4 +12,5 @@
 later / nice to have:
 [] melee attack type (dropped attack_type gene when the genome was split)
 [] obstacles + pathfinding (deliberately out of scope, see the plan)
+[x] genome-evolution line chart saved to charts/ (per gene, per wave)
 [] save/load best genomes between runs for the telemetry writeup

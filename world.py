@@ -2,7 +2,7 @@ import pygame
 from geneticist import Geneticist
 from data_types import *
 from entities import *
-from events import EventManager, InputKeys
+from events import EventManager, InputKeys, MouseButton
 from telemetry import Telemetry
 
 
@@ -18,6 +18,7 @@ class World:
         self.geneticist = Geneticist()
         self.telemetry = Telemetry()
         self.game_over = False
+        self.aim = Vector2D(0, 0)   # live cursor position, refreshed each frame
 
         self.spawn_player(player)
         self.__add_player_inputs__()
@@ -37,9 +38,11 @@ class World:
         self.event_manager.add_input_event(InputKeys.S, lambda: self.player.move(Vector2D(0, 1)))
         self.event_manager.add_input_event(InputKeys.D, lambda: self.player.move(Vector2D(1, 0)))
         self.event_manager.add_input_event(InputKeys.A, lambda: self.player.move(Vector2D(-1, 0)))
-        self.event_manager.add_input_event(InputKeys.SPACE, lambda: self.player.shoot(self))
         self.event_manager.add_input_event(InputKeys.LSHIFT, lambda: self.player.dash())
         self.event_manager.add_input_event(InputKeys.TAB, lambda: self.telemetry.toggle_debug())
+        self.event_manager.add_input_event(InputKeys.C, lambda: self.geneticist.save_chart())
+        # Aim with the mouse, hold left click to fire toward the cursor.
+        self.event_manager.add_mouse_hold_event(MouseButton.LEFT, lambda pos: self.player.shoot(self, pos))
 
     def begin(self):
         """Kick off wave 1. Pulled out of __init__ so construction stays side
@@ -77,6 +80,7 @@ class World:
 
     def update(self):
         self.event_manager.check_events()
+        self.aim = self.event_manager.mouse_pos
         self.screen.fill("black")
 
         to_remove = []

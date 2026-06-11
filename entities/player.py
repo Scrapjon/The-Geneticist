@@ -1,7 +1,10 @@
+from math import atan2
+
 import config
-from data_types.vector import Vector2D
+from data_types.vector import Vector2D, MAGIC_DEGREE_NUMBER
 
 from .ship import Ship
+from .projectile import Projectile
 
 
 class PlayerShip(Ship):
@@ -20,10 +23,10 @@ class PlayerShip(Ship):
         self._dash_dir = Vector2D(1, 0)
 
     def move(self, direction: Vector2D):
-        # Base Ship.move throws away the magnitude and drifts at one pixel a
-        # frame, which gets the player swarmed instantly. Scale the input by the
-        # speed stat so the player can actually outrun the slower archetypes.
-        super().move(direction.normalise() * self.speed)
+        # WASD only sets where we drift. Facing is the mouse's job now, so unlike
+        # the base Ship.move this deliberately leaves rotation alone instead of
+        # spinning the ship to point where it's moving.
+        self.velocity = direction.normalise() * self.speed
 
     def dash(self):
         # A committed burst in whatever direction we're already heading. It locks
@@ -42,13 +45,24 @@ class PlayerShip(Ship):
     def dash_ready(self) -> bool:
         return self._dash_cooldown <= 0 and self._dash_timer <= 0
 
-    def shoot(self, world):
-        # Cooldown is in seconds; world ticks it down each frame. Without it a
-        # held space bar spawns a projectile every single frame.
+    def shoot(self, world, target: Vector2D):
+        # Fire toward the cursor instead of along the velocity, so you can kite
+        # and shoot in different directions at the same time. Still gated by the
+        # cooldown so a held button doesn't spawn a bullet every frame.
         if self._fire_cooldown > 0:
             return
         self._fire_cooldown = config.PLAYER_FIRE_COOLDOWN
-        super().shoot(world, damage=config.PLAYER_DAMAGE)
+        direction = (target - self.location).normalise()
+        if direction.length() == 0:
+            direction = Vector2D(1, 0)
+        world.spawn_projectile(
+            Projectile(self.location, 10, direction, self, damage=config.PLAYER_DAMAGE)
+        )
+
+    def _face(self, aim: Vector2D):
+        aim_dir = aim - self.location
+        if aim_dir.length() > 0:
+            self.rotation = atan2(-aim_dir.y, aim_dir.x) * MAGIC_DEGREE_NUMBER
 
     def update(self, *args, **kwargs):
         dt = 1.0 / config.FPS
@@ -66,5 +80,10 @@ class PlayerShip(Ship):
                 self.velocity = self._dash_dir * self.speed
             else:
                 self.velocity = self._dash_dir * (self.speed * config.DASH_SPEED_MULT)
+
+        # Point the ship at the cursor every frame.
+        world = kwargs.get("world")
+        if world is not None and getattr(world, "aim", None) is not None:
+            self._face(world.aim)
 
         super().update(*args, **kwargs)

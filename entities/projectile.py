@@ -21,7 +21,7 @@ class Projectile(Entity):
 
     radius = property(__get_radius__, __set_radius__)
 
-    def __init__(self, location: Vector2D, radius: float, velocity: Vector2D, owner: Entity, speed: float = 2, damage: float = 0) -> None:
+    def __init__(self, location: Vector2D, radius: float, velocity: Vector2D, owner: Entity, speed: float = 5, damage: float = 0) -> None:
         super().__init__(location)
         self.circle = Circle(location, radius)
         self.speed = speed

@@ -32,9 +32,11 @@ Needs Python 3.13+ and Pygame 2.6.1+.
 | Input        | Action                              |
 |--------------|-------------------------------------|
 | W / A / S / D | Move                               |
-| Space        | Fire (in the direction you're facing)|
+| Mouse        | Aim                                 |
+| Left click   | Fire toward the cursor (hold to keep firing)|
 | Left Shift   | Dash (quick dodge, short cooldown)  |
 | TAB          | Toggle the debug telemetry panel    |
+| C            | Save the genome-evolution chart now |
 | Window close | Quit                                |
 
 ## How a wave works
@@ -61,6 +63,15 @@ Enemies change colour by FSM state: grey patrol, orange chase, red attack, blue
 flee. The TAB panel shows wave time, damage dealt to you, average lifespan,
 mutation sigma, and the full genome of last wave's fittest enemy.
 
+## Evolution chart
+
+Every wave the population's mean gene values get logged, and a line chart is
+written to `charts/genome_evolution.png` (each gene a different colour, boid
+weights and point-buy stats split into two panels because they sit on different
+scales). It refreshes between waves, saves on death and on quit, and you can dump
+it any time with C. Handy for the telemetry writeup, you can watch the population
+specialise against however you play.
+
 ## Layout
 
 ```
@@ -68,6 +79,7 @@ main.py            entry point, owns the loop
 world.py           mediator: entities, collision, wave ticking, render
 geneticist.py      population, fitness, selection/crossover/mutation, wave loop
 telemetry.py       HUD overlay
+charts.py          genome-evolution line chart (writes charts/*.png)
 events.py          key -> callback input system
 config.py          every tunable in one place
 data_types/        vectors, triangle, circle, genome + GA operators

@@ -30,6 +30,8 @@ def main():
         running = not world.should_exit()
         clock.tick(config.FPS)
 
+    # Make sure the final chart reflects the whole run before we shut down.
+    world.geneticist.save_chart()
     pygame.quit()
 
 
