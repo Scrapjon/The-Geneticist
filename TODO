@@ -1,3 +1,15 @@
-[] Plan out class hierarchy
+[x] Plan out class hierarchy
+[x] Layered package architecture (data_types / entities / orchestration)
+[x] Boids steering driven by genome weights
+[x] Genome + point-buy normalisation (sum to 1.0)
+[x] Genome-driven FSM (Patrol / Chase / Attack / Flee)
+[x] Combat + damage/health (projectiles do damage, not instant kills)
+[x] Fitness heuristic (damage fraction * time alive)
+[x] Selection / crossover / Gaussian mutation
+[x] Wave lifecycle: evaluate -> select -> breed -> spawn, with difficulty scalar
+[x] Telemetry overlay (TAB)
 
-Blah blah blah...
+later / nice to have:
+[] melee attack type (dropped attack_type gene when the genome was split)
+[] obstacles + pathfinding (deliberately out of scope, see the plan)
+[] save/load best genomes between runs for the telemetry writeup

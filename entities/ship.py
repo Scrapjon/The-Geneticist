@@ -18,7 +18,7 @@ class Ship(Entity):
     health: float
 
     velocity: Vector2D = Vector2D(0,1)
-    
+
     color = (0,0,0)
     shape: pygame.Rect
     triangle: Triangle
@@ -31,7 +31,7 @@ class Ship(Entity):
 
     def _get_rotation(self) -> Rotator:
         return self._rotation
-    
+
     def add_rotation(self, rotation: Rotator):
         self.rotation += rotation
 
@@ -40,7 +40,7 @@ class Ship(Entity):
         self.velocity = direction
 
     rotation = property(_get_rotation, _set_rotation)
-    
+
     def __init__(self, location: Vector2D, rotation: Rotator, max_health: float):
         super().__init__(location)
         self.triangle = Triangle(self.location, Vector2D(50, 0), Vector2D(0, 20), Vector2D(0, -20))
@@ -48,8 +48,25 @@ class Ship(Entity):
         self.max_health, self.health = max_health, max_health
         self.color = (0, 255, 0)
         self.entity_type = "Ship"
-        
-    
+
+    def take_damage(self, amount: float):
+        """
+        Knock health down by amount and flag the ship dead once it bottoms out.
+        Everything used to instant-kill on contact; routing kills through here
+        is what lets the point-buy health gene and the damage gene actually
+        mean something, and it gives the fitness layer a death to timestamp.
+        """
+        self.health -= amount
+        if self.health <= 0:
+            self.health = 0
+            self.alive = False
+
+    @property
+    def health_ratio(self) -> float:
+        if self.max_health <= 0:
+            return 0.0
+        return self.health / self.max_health
+
     def update(self, *args: Any, **kwargs: Any) -> None:
         super().update(*args, **kwargs)
         self.location = self.location + (self.velocity)
@@ -58,9 +75,8 @@ class Ship(Entity):
     def draw(self, screen: pygame.Surface):
         shape = pygame.draw.polygon(screen, self.color, [x.tuple for x in self.triangle.tuple])
 
-    def shoot(self, world):
-        world.spawn_projectile(Projectile(self.location, 10, self.velocity, self))
-    
+    def shoot(self, world, damage: float = 0):
+        world.spawn_projectile(Projectile(self.location, 10, self.velocity, self, damage=damage))
+
     def handle_collision(self, world):
         pass
-        

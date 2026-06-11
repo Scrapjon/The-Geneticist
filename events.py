@@ -10,15 +10,18 @@ class InputKeys(IntEnum):
 
     SPACE = pygame.K_SPACE
     LSHIFT = pygame.K_LSHIFT
+    TAB = pygame.K_TAB
 
 class EventManager:
-    
-    input_events: dict[InputKeys, Callable[[], None]] = {}
-    should_exit: bool = False
 
-    
+    def __init__(self):
+        # Instance-owned so two managers can never tread on each other's
+        # bindings (these were class attributes before).
+        self.input_events: dict[InputKeys, Callable[[], None]] = {}
+        self.should_exit: bool = False
+
     def add_input_event(self, input_key: InputKeys, func: Callable[[], None]):
-        """ 
+        """
         Adds an event to be called upon when the assosiated input key is pressed
         Use lambdas or partials to pass functions with parameters
         """
